@@ -7,6 +7,8 @@ from ..base import ActorStack
 import subprocess
 import json
 
+from models.pydantic_models import ValidationResult
+
 logger = logging.getLogger(__name__)
 
 
@@ -225,3 +227,32 @@ class FinderActorStack(ActorStack):
         '''
         result = await self._run_apple_script(script)
         return json.loads(result) if result else []
+
+    async def validate_state(self, current_state: Dict[str, Any], expected_state: Dict[str, Any]) -> ValidationResult:
+        """Validate Finder-specific state."""
+        failures = []
+        warnings = []
+
+        try:
+            # Finder-specific validations
+            if not self.workspace.frontmostApplication().bundleIdentifier() == 'com.apple.finder':
+                warnings.append("Finder is not the frontmost application")
+
+            # Check expected state
+            if expected_state:
+                if 'path' in expected_state:
+                    current_path = await self._get_current_path()
+                    if current_path != expected_state['path']:
+                        failures.append(f"Path mismatch: expected {expected_state['path']}, got {current_path}")
+
+            return ValidationResult(
+                success=len(failures) == 0,
+                failures=failures,
+                warnings=warnings
+            )
+        except Exception as e:
+            return ValidationResult(
+                success=False,
+                failures=[f"Validation error: {str(e)}"],
+                warnings=[]
+            )
