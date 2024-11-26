@@ -1,0 +1,47 @@
+# automation_framework/config/automation.yml
+# Revision No: 001
+# Goals: Provide example YAML configuration.
+# Type of Code Response: Add new code
+
+# OpenAI API settings
+openai_api_key: "YOUR_OPENAI_API_KEY" # Replace with your actual key
+openai_api: 'asdasd'
+# Execution settings
+max_retries: 3
+timeout: 30
+max_concurrent_actions: 5
+
+# Storage paths
+screenshot_dir: "/var/lib/automation/screenshots"
+log_dir: "/var/log/automation"
+
+# Database settings
+database_url: "sqlite:///./automation.db"
+
+# Debug settings
+debug: false
+
+# Actor-specific settings
+actors:
+  chrome:
+    default_browser: true
+    profiles_dir: "~/Library/Application Support/Google/Chrome"
+
+  finder:
+    default_location: "~/Documents"
+
+  generic:
+    mouse_speed: 1.0
+    key_delay: 0.1
+
+# Models directory
+models_dir: "./models" # Path to directory containing CoreML models and prompts
+
+# Dependencies: None
+# Required Actions: Replace placeholder API key with your actual OpenAI API key.
+# CLI Commands: None
+# Is the script complete? Yes, but requires user action.
+# Is the code chunked version? No
+# Is the code finished and commit-ready? No, needs API key.
+# Are there any gaps that should be fixed in the next iteration? No
+# Goals for the file in the following code block in case it's incomplete: Get a valid OpenAI API key.

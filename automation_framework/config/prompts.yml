@@ -1,0 +1,98 @@
+# automation_framework/config/prompts.yml
+# Revision No: 001
+# Goals: Define prompt templates for OpenAI.
+# Type of Code Response: Add new code
+
+# Prompt Templates
+
+instruction_analysis: |
+  Analyze the following automation instruction:
+
+  Instruction: {{ instruction }}
+
+  Current System State:
+  {{ current_state }}
+
+  Available Actions:
+  {{ available_actions }}
+
+  Provide a structured analysis including:
+  1. Required applications and actions
+  2. Prerequisites and dependencies
+  3. Success criteria
+  4. Potential challenges or edge cases
+
+  Respond in JSON format with the following keys:
+  * "required_apps": [List of required application names]
+  * "actions": [List of actions with parameters]
+  * "preconditions": [List of preconditions]
+  * "success_criteria": [List of success criteria]
+  * "challenges": [List of potential challenges]
+
+
+action_plan_generation: |
+  Based on the following analysis:
+  {{ analysis }}
+
+  And available actions:
+  {{ available_actions }}
+
+  Generate a detailed action plan with:
+  1. Specific actor and action for each step
+  2. Required parameters and values
+  3. Success criteria for each step
+  4. Error handling and retry strategies
+
+  Provide the plan as a JSON array of steps, where each step has the following keys:
+  * "actor": "actor_name"
+  * "action": "action_name"
+  * "parameters": {Dictionary of parameters}
+  * "success_criteria": {Dictionary of success criteria}
+  * "continue_on_error": true/false (optional)
+
+
+validation: |
+  Validate the following execution:
+
+  Original Instruction: {{ instruction }}
+  Action Plan: {{ action_plan }}
+  Execution Results: {{ execution_results }}
+  Current State: {{ current_state }}
+
+  Determine:
+  1. If the intended goal was achieved
+  2. Any remaining or incomplete tasks
+  3. Recommendations for retry or alternative approaches
+
+  Respond in JSON format with the following keys:
+  * "goal_achieved": true/false
+  * "remaining_tasks": [List of remaining tasks]
+  * "recommendations": [List of recommendations]
+
+recovery_plan: |
+  The following step failed validation:
+  {{ step }}
+
+  Validation Failures:
+  {{ failures }}
+
+  Current State:
+  {{ current_state }}
+
+  Generate a recovery plan to address the failures.
+  The plan should include specific steps to correct the issue and resume execution.
+  Provide the plan as a JSON array of steps.  Each step should have the following keys:
+  * "actor": "actor_name"
+  * "action": "action_name"
+  * "parameters": {Dictionary of parameters}
+  * "success_criteria": {Dictionary of success criteria}
+  * "continue_on_error": true/false (optional)
+
+# Dependencies: None
+# Required Actions: None
+# CLI Commands: None
+# Is the script complete? Yes
+# Is the code chunked version? No
+# Is the code finished and commit-ready? Yes
+# Are there any gaps that should be fixed in the next iteration? No
+# Goals for the file in the following code block in case it's incomplete: N/A

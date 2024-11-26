@@ -1,0 +1,31 @@
+Metadata-Version: 2.1
+Name: automation_framework
+Version: 0.1.0
+Summary: A framework for automating macOS UI interactions.
+Author-email: Your Name <your.email@example.com>
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Requires-Dist: pydantic==2.4.2
+Requires-Dist: pyobjc-core==10.0
+Requires-Dist: pyobjc-framework-Cocoa==10.0
+Requires-Dist: pyobjc-framework-Quartz==10.0
+Requires-Dist: pyobjc-framework-Vision==10.0
+Requires-Dist: asyncio==3.4.3
+Requires-Dist: aiofiles==23.2.1
+Requires-Dist: sqlalchemy==2.0.22
+Requires-Dist: alembic==1.12.0
+Requires-Dist: click==8.1.7
+Requires-Dist: rich==13.6.0
+Requires-Dist: pyautogui
+Requires-Dist: Pillow
+Requires-Dist: psutil
+Requires-Dist: opencv-python
+Requires-Dist: openai
+Requires-Dist: Jinja2
+Requires-Dist: PyYAML
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-asyncio; extra == "dev"
+Requires-Dist: mock; extra == "dev"
+Requires-Dist: coverage; extra == "dev"
+Requires-Dist: memory-profiler; extra == "dev"

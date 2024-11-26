@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "automation_framework"
+version = "0.1.0"
+authors = [{ name = "Your Name", email = "your.email@example.com" }]
+description = "A framework for automating macOS UI interactions."
+readme = "README.md"
+requires-python = ">=3.7"
+
+dependencies = [
+    "pydantic==2.4.2",
+    "pyobjc-core==10.0",
+    "pyobjc-framework-Cocoa==10.0",
+    "pyobjc-framework-Quartz==10.0",
+    "pyobjc-framework-Vision==10.0",
+    "asyncio==3.4.3",
+    "aiofiles==23.2.1",
+    "sqlalchemy==2.0.22",
+    "alembic==1.12.0",
+    "click==8.1.7",
+    "rich==13.6.0",
+    "pyautogui",
+    "Pillow",
+    "psutil",
+    "opencv-python",
+    "openai",
+    "Jinja2",
+    "PyYAML",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio", "mock", "coverage", "memory-profiler"]
+
+[tool.setuptools.packages.find]
+include = ["core", "actors", "config", "models", "services"]
+exclude = ["tests", "examples", "docs"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--verbose --cov=automation_framework --cov-report term-missing"
+asyncio_mode = "auto"
+
+
+# [tool.setuptools.packages.find]
+# where = ["automation_framework"]  # Specify the directory to search
+# include = ["automation_framework.*"] # Include all subpackages
