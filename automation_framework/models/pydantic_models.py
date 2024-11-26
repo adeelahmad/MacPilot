@@ -34,6 +34,8 @@ class DynamicBaseModel(BaseModel):
             return None
 
 
+
+
 class ActionStep(BaseModel):
     """
     Represents a single step in an automation action. This model provides a structured
@@ -211,3 +213,55 @@ class UIState(BaseModel):
 
 
 UIElement.update_forward_refs()
+
+# !/usr/bin/env python3
+
+import asyncio
+import logging
+from datetime import datetime
+from typing import Dict, List, Optional, Any, Union
+from pydantic import BaseModel, Field
+import Quartz
+from Cocoa import NSWorkspace, NSEvent, NSAppleScript
+import json
+import subprocess
+from enum import Enum
+
+logger = logging.getLogger(__name__)
+
+
+class ActionType(Enum):
+    """Types of automation actions"""
+    CLICK = "click"
+    TYPE = "type"
+    PRESS_KEY = "press_key"
+    MOVE_MOUSE = "move_mouse"
+    DRAG_MOUSE = "drag_mouse"
+    SCROLL = "scroll"
+    WAIT = "wait"
+    FOCUS_WINDOW = "focus_window"
+    LAUNCH_APP = "launch_app"
+    QUIT_APP = "quit_app"
+    CUSTOM_SCRIPT = "custom_script"
+
+
+class ActionResult(BaseModel):
+    """Result of an automation action"""
+    type: ActionType = Field(..., description="Type of action performed")
+    success: bool = Field(..., description="Whether action succeeded")
+    timestamp: datetime = Field(default_factory=datetime.now, description="When action was performed")
+    duration: float = Field(..., description="Time taken to perform action in seconds")
+    error: Optional[str] = Field(None, description="Error message if action failed")
+    details: Dict[str, Any] = Field(default_factory=dict, description="Additional result details")
+
+
+class ActionRequest(BaseModel):
+    """Request to perform an automation action"""
+    type: ActionType = Field(..., description="Type of action to perform")
+    params: Dict[str, Any] = Field(default_factory=dict, description="Action parameters")
+    timeout: float = Field(default=30.0, description="Action timeout in seconds")
+    retries: int = Field(default=3, description="Number of retry attempts")
+    validate: bool = Field(default=True, description="Whether to validate result")
+    error_handler: Optional[str] = Field(None, description="Error handler function name")
+    recovery_script: Optional[str] = Field(None, description="Recovery AppleScript")
+

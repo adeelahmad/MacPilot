@@ -26,6 +26,35 @@ class Orchestrator:
         self.available_actions = self._get_available_actions()
         self.encoder = DateTimeEncoder()
 
+    async def _validate_step(self, step: ActionStep, context: AutomationContext) -> ValidationResult:
+        """Validate step execution results."""
+        try:
+            # Get current state
+            current_state = await self.config['state_manager'].capture_full_state()
+            current_state_dict = recursive_dict_conversion(current_state)
+
+            # Get expected state
+            expected_state = recursive_dict_conversion(step.expected_outcome) if step.expected_outcome else {}
+
+            # Let the actor validate its own state
+            actor = self._get_actor(step.actor)
+            if not actor:
+                return ValidationResult(
+                    success=False,
+                    failures=[f"Unknown actor: {step.actor}"],
+                    warnings=[]
+                )
+
+            return await actor.validate_state(current_state_dict, expected_state)
+
+        except Exception as e:
+            logger.error(f"Validation error: {e}")
+            return ValidationResult(
+                success=False,
+                failures=[f"Validation error: {str(e)}"],
+                warnings=[]
+            )
+
     async def _execute_plan(self, plan: List[ActionStep], context: AutomationContext) -> bool:
         """Execute the generated action plan."""
         for i, step in enumerate(plan):
@@ -67,7 +96,7 @@ class Orchestrator:
 
         return True
 
-    async def _validate_step(self, step: ActionStep, context: AutomationContext) -> ValidationResult:
+    async def _validate_stepx(self, step: ActionStep, context: AutomationContext) -> ValidationResult:
         """Validate step execution results with proper state handling."""
         try:
             # Capture current state and convert to dictionary

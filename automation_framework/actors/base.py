@@ -23,3 +23,4 @@ class ActorStack(ABC, metaclass=ActorStackMeta):
     def validate_state(self) -> bool:
         """Validate actor stack is in valid state."""
         raise NotImplementedError
+
