@@ -1,136 +1,195 @@
-# **MacPilot 🚀: Your AI-Powered macOS Automation Framework**
+# 🤖 MacPilot - Advanced macOS UI Automation Framework
 
-MacPilot leverages the power of Large Language Models (LLMs) to automate tasks on your Mac. It translates natural language instructions into executable actions, controlling applications and navigating complex workflows hands-free.
+<div align="center">
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
+[![GitHub stars](https://img.shields.io/github/stars/adeelahmad/macpilot?style=social)](https://github.com/adeelahmad/macpilot/stargazers)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org)
+[![Platform](https://img.shields.io/badge/platform-macOS-lightgrey)](https://www.apple.com/macos)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
----
+**Native macOS UI Automation with GPT-Powered Intelligence**
 
-## **🌟 Key Features**
+[Key Features](#-key-features) •
+[Architecture](#%EF%B8%8F-architecture) •
+[Installation](#-installation) •
+[Usage](#-usage) •
+[Roadmap](#-roadmap) •
+[Contributing](#-contributing)
 
-- **Natural Language Instruction Processing:**  Give instructions to your Mac in plain English.
-- **Dynamic State Management:** Captures the current UI state, including active applications, windows, UI elements, and system information, using native macOS APIs and the Vision framework.  This state is then used by the AI to plan and execute actions.
-- **AI-Powered Action Planning:** Uses LLMs to analyze instructions and generate step-by-step action plans based on the current state and available actions.  The plans are structured using Pydantic models for robustness and validation.
-- **Actor Stack Framework:** Executes actions on the system.
-    - **Generic Actions:**  Control the mouse, keyboard, activate applications, switch windows, and more.
-    - **Application-Specific Actors:** Includes pre-built actors for Chrome (browser control) and Finder (file system operations), with the ability to easily extend the framework to support other applications.
-- **Pattern Matching (Optional):**  While primarily relying on structured output from the LLM, the framework includes a pattern-matching mechanism for potential optimization of common tasks.
-- **State Validation and Recovery:** Validates the UI state after each step and attempts recovery from failures using AI-generated recovery plans.
-- **Modular and Extensible:** Designed for easy extension and customization. Add new actors, actions, and patterns to tailor the framework to your specific needs.
+</div>
 
----
+## 🌟 What is MacPilot?
 
-## **📂 Project Structure**
+MacPilot is a state-of-the-art macOS UI automation framework that combines native Apple technologies with GPT intelligence to enable human-like interaction with your Mac. Write instructions in plain English, and let MacPilot handle the automation.
 
-```
-automation_framework/
-├── actors/                # Application-specific and generic action implementations
-│   ├── base.py
-│   ├── chrome/
-│   │   └── browser.py
-│   ├── finder/
-│   │   └── filesystem.py
-│   └── generic/
-│       └── mouse_keyboard.py
-├── core/                  # Core framework components
-│   ├── config.py
-│   ├── context.py
-│   └── metaclasses/
-│       └── actor_meta.py
-├── examples/              # Example usage scripts
-│   └── orchestration_example.py
-├── models/                # Data models (Pydantic)
-│   ├── base.py
-│   ├── db_session.py
-│   └── pydantic_models.py
-├── services/              # Core services
-│   ├── ai/
-│   │   └── openai_service.py
-│   ├── execution/
-│   │   └── engine.py
-│   ├── instruction/
-│   │   └── processor.py
-│   ├── macos_ui_service/
-│   │   ├── __init__.py
-│   │   └── macos_ui_service.py
-│   ├── mapping/
-│   │   ├── __init__.py
-│   │   └── element_mapper.py
-│   ├── patterns/
-│   │   ├── __init__.py
-│   │   ├── interaction_patterns.py
-│   │   ├── pattern_matcher.py
-│   │   └── pattern_registry.py
-│   ├── state/
-│   │   └── manager.py
-│   └── validation/
-│       ├── __init__.py
-│       ├── state_validator.py
-│       └── validator.py  # Example validation rules
-├── tests/                 # Unit tests
-├── utils/                 # Utility functions and decorators
-│   └── decorators.py
-├── __init__.py
-├── __main__.py
-└── main.py                # Command-line interface
+### Perfect For:
+- 🔄 **Process Automation** - Automate repetitive UI tasks
+- 🧪 **UI Testing** - Test macOS applications
+- 🤖 **Desktop RPA** - Build robotic process automation
+- 🔍 **Screen Analysis** - Extract data from UI elements
+- 🧭 **Workflow Automation** - Create complex UI workflows
+
+## ✨ Key Features
+
+### 🧠 Core Intelligence
+- **GPT Integration** - Natural language instruction processing
+- **Vision Framework** - Advanced UI element detection
+- **State Awareness** - Real-time system state tracking
+- **Pattern Recognition** - Learned UI interaction patterns
+- **Self-healing** - Automated error recovery
+
+### 🎯 Native Integration
+- **Apple Vision** - Native OCR and element detection
+- **AppleScript** - Deep OS integration
+- **Accessibility APIs** - Comprehensive UI control
+- **Cocoa/AppKit** - Native macOS frameworks
+- **Core Graphics** - Low-level screen capture
+
+### 🛠 Developer Experience
+- **Async Architecture** - Built on modern async Python
+- **Type Safety** - Full Pydantic validation
+- **Actor System** - Modular action execution
+- **State Management** - Comprehensive UI state tracking
+- **Pattern System** - Reusable interaction patterns
+
+### 🔄 Application Control
+- **Chrome Control** - Deep browser automation
+- **Finder Operations** - File system automation
+- **System Control** - OS-level operations
+- **Menu Navigation** - Application menu control
+- **Window Management** - Window state control
+
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    A[Natural Language Instructions] --> B[GPT Analysis Layer]
+    B --> C[Action Planning]
+    C --> D[Actor System]
+    D --> E[UI Interaction Layer]
+    E --> F[State Management]
+    F --> B
 ```
 
----
+### Core Components:
+1. **Instruction Processing** - GPT-powered instruction analysis
+2. **State Management** - UI state tracking and validation
+3. **Actor System** - Modular action execution
+4. **Pattern System** - Reusable interaction patterns
+5. **Vision System** - UI element detection and OCR
+6. **Recovery System** - Automated error handling
 
-## **⚙️ Getting Started**
+## 🚀 Installation
 
-1. **Clone the Repository:**
+```bash
+# Install from PyPI
+pip install macpilot
 
-   ```bash
-   git clone https://github.com/your-username/MacPilot.git  # Replace with your repository URL
-   cd MacPilot
-   ```
+# Or install from source
+git clone https://github.com/adeelahmad/macpilot.git
+cd macpilot
+pip install -e .
+```
 
-2. **Install Dependencies:**
+## 📝 Usage
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+### Basic Example
+```python
+from macpilot import MacPilot
 
-3. **Run Example Orchestration:**
+async def main():
+    pilot = MacPilot()
 
-   ```bash
-   python -m automation_framework execute "Open Chrome and go to google.com"  # Example instruction
-   ```
+    # Simple automation
+    await pilot.execute("Open Chrome and search for 'Python tutorials'")
 
----
+    # Complex workflows
+    await pilot.execute("""
+        1. Find all PDFs in Downloads
+        2. Create a folder named 'Documents'
+        3. Move PDFs older than 30 days
+        4. Create a summary spreadsheet
+    """)
 
-## **💡 How It Works**
+if __name__ == "__main__":
+    asyncio.run(main())
+```
 
-1. **Instruction Input:** Provide a task in natural language.
-2. **State Capture:** MacPilot captures the current UI and system state.
-3. **AI Planning:**  The LLM analyzes the instruction and state to generate a structured action plan.
-4. **Execution:** The Execution Engine executes the plan using the appropriate actors.
-5. **Validation and Recovery:** After each step, the state is validated. If a failure occurs, a recovery plan is generated and executed.
+### Pattern Example
+```python
+from macpilot.patterns import register_pattern
 
----
+@register_pattern("login_flow")
+async def handle_login(username: str, password: str):
+    return [
+        {"action": "click", "target": "username_field"},
+        {"action": "type", "text": username},
+        {"action": "click", "target": "password_field"},
+        {"action": "type", "text": password},
+        {"action": "click", "target": "login_button"}
+    ]
+```
 
-## **💻 Usage**
+## 📋 Todo & Roadmap
 
-See the `examples/` directory for more detailed usage examples, including how to define custom actors and integrate them into the framework.  The `main.py` file provides a command-line interface for executing instructions and listing available capabilities.
+### High Priority
+- [ ] User Interface
+  - [ ] CLI tool for automation scripts
+  - [ ] Web dashboard for monitoring
+  - [ ] Visual workflow builder
 
----
+- [ ] Core Features
+  - [ ] Local LLM support
+  - [ ] Improved error recovery
+  - [ ] Performance optimizations
 
-## **🤝 Contributing**
+### Medium Priority
+- [ ] Documentation
+  - [ ] API reference
+  - [ ] Pattern library
+  - [ ] Example gallery
 
-Contributions are welcome!  Please follow these steps:
+- [ ] Testing
+  - [ ] Increase test coverage
+  - [ ] Integration tests
+  - [ ] Performance benchmarks
 
-1. Fork the repository.
-2. Create a branch: `git checkout -b feature/your-feature-name`.
-3. Commit your changes: `git commit -m "Add your feature description"`.
-4. Push to the branch: `git push origin feature/your-feature-name`.
-5. Open a pull request.
+### Low Priority
+- [ ] Additional Features
+  - [ ] Safari automation support
+  - [ ] Network request monitoring
+  - [ ] Advanced screen recording
+  - [ ] Workflow marketplace
 
----
+## 🤝 Contributing
 
-## **📄 License**
+Contributions are welcome! Areas we're focusing on:
 
-MacPilot is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+- 📝 Documentation improvements
+- 🧪 Testing and bug fixes
+- 🎯 New application actors
+- 🔄 Pattern implementations
+- 🐛 Performance optimizations
 
+Check our [Contributing Guide](CONTRIBUTING.md) for details.
 
+## 📜 License
+
+MacPilot is MIT licensed. See [LICENSE](LICENSE) for details.
+
+## 🙏 Acknowledgments
+
+- Apple for macOS APIs
+- OpenAI for GPT models
+- Python community
+
+<div align="center">
+
+Made with ❤️ by the MacPilot Team
+
+[🌐 Website](https://macpilot.dev) •
+[📖 Documentation](https://docs.macpilot.dev) •
+[💬 Discord](https://discord.gg/macpilot)
+
+</div>
