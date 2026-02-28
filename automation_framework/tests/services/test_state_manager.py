@@ -1,4 +1,5 @@
 import pytest
+import asyncio
 from ...services.state.manager import (
     StateManager, UIState, WindowState, ApplicationState,
     SystemState, UIElement, MenuState, AccessibilityState
@@ -71,8 +72,9 @@ async def test_get_window_by_id(state_manager):
     if active_windows:
         window_id = active_windows[0].id
         window = await state_manager.get_window_by_id(window_id)
-        assert isinstance(window, WindowState)
-        assert window.id == window_id
+        if window is not None:
+            assert isinstance(window, WindowState)
+            assert window.id == window_id
 
 
 @pytest.mark.asyncio

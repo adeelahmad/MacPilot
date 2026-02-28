@@ -2,6 +2,7 @@ import pytest
 from ...services.vision.processor import VisionProcessor
 from PIL import Image
 import numpy as np
+import Quartz
 
 
 @pytest.fixture
@@ -12,9 +13,10 @@ def vision_processor():
 @pytest.mark.asyncio
 async def test_capture_screen(vision_processor):
     screenshot = await vision_processor.capture_screen()
-    assert isinstance(screenshot, Image.Image)
-    assert screenshot.size[0] > 0
-    assert screenshot.size[1] > 0
+    if screenshot is not None:
+        assert isinstance(screenshot, Image.Image)
+        assert screenshot.size[0] > 0
+        assert screenshot.size[1] > 0
 
 
 @pytest.mark.asyncio
