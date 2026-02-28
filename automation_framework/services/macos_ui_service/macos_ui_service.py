@@ -135,6 +135,9 @@ class MacOSUIService(NSObject):
                 with open(file_path, "w") as f:
                     f.write(result)
                 logger.info(f"Saved clipboard content to {file_path}")
+            else:
+                with open(file_path, "w") as f:
+                    f.write("")
         except Exception as e:
             logger.error(f"Error saving clipboard: {e}")
             # Create empty file
