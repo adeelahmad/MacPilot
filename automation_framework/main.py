@@ -7,17 +7,17 @@ import click
 from rich.console import Console
 from rich.logging import RichHandler
 
-from services.state.manager import StateManager
-from core.metaclasses.actor_meta import ActorStackMeta
-from actors.generic.mouse_keyboard import GenericActorStack
-from actors.chrome.browser import ChromeActorStack
-from actors.finder.filesystem import FinderActorStack
-from services.instruction.processor import InstructionProcessor
-from services.orchestration.orchestrator import Orchestrator
-from core.config import AutomationConfig
-from services.macos_ui_service.macos_ui_service import MacOSUIService
+from .services.state.manager import StateManager
+from .core.metaclasses.actor_meta import ActorStackMeta
+from .actors.generic.mouse_keyboard import GenericActorStack
+from .actors.chrome.browser import ChromeActorStack
+from .actors.finder.filesystem import FinderActorStack
+from .services.instruction.processor import InstructionProcessor
+from .services.orchestration.orchestrator import Orchestrator
+from .core.config import AutomationConfig
+from .services.macos_ui_service.macos_ui_service import MacOSUIService
 import rich
-from utils.decorators import log_execution
+from .utils.decorators import log_execution
 
 # Setup logging
 logging.basicConfig(

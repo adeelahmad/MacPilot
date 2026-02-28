@@ -9,8 +9,8 @@ from typing import Any, Dict, List
 
 from pydantic import BaseModel
 
-from core.config import AutomationConfig
-from models.pydantic_models import (
+from ...core.config import AutomationConfig
+from ...models.pydantic_models import (
     ActionStep,
     AnalysisResult,
     DynamicBaseModel,
@@ -228,4 +228,3 @@ Current State:
 {state_json}
 
 Return a JSON array of RecoveryStep objects (same shape as ActionStep but for recovery) that brings the system back to a known good state, validates success, and resumes the original workflow."""
-

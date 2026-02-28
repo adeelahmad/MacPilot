@@ -7,8 +7,8 @@ from typing import Any, Dict, List
 import instructor
 from openai import OpenAI
 
-from core.config import AutomationConfig
-from models.pydantic_models import (
+from ...core.config import AutomationConfig
+from ...models.pydantic_models import (
     ActionStep,
     AnalysisResult,
     DynamicBaseModel,

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from core.config import AutomationConfig
+from ...core.config import AutomationConfig
 from .openai_service import OpenAIService
 
 
@@ -19,4 +19,3 @@ def get_ai_service(config: AutomationConfig):
         return MLXLMService(config)
 
     return OpenAIService(config)
-

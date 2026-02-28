@@ -1,9 +1,9 @@
 import asyncio
 from typing import Dict, Any, List, Union
-from core.config import AutomationConfig
+from ...core.config import AutomationConfig
 from ..ai.factory import get_ai_service
 from ..state.manager import StateManager, UIState
-from models.pydantic_models import ActionStep
+from ...models.pydantic_models import ActionStep
 import logging
 
 logger = logging.getLogger(__name__)
