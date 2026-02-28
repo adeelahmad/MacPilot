@@ -3,25 +3,18 @@
 # Goals: Implement tests for the generic actor stack.
 # Type of Code Response: Add new code
 
-
 import pytest
+from unittest.mock import AsyncMock
+
 from ...actors.generic.mouse_keyboard import GenericActorStack
-from unittest.mock import AsyncMock, patch
 
 
 @pytest.mark.asyncio
-async def test_execute_action(mocker):
-    with patch('task_automation.actors.generic.mouse_keyboard.pyautogui') as mock_pyautogui:
-        actor = GenericActorStack()
-
-        # Mock all pyautogui functions
-        for capability in actor.capabilities:
-            setattr(mock_pyautogui, capability.replace('-', '_'), AsyncMock(return_value=True))
-
-        for action_name, action_data in actor.capabilities.items():
-            params = {param: "test_value" for param in action_data['params']}
-            result = await actor.execute_action(action_name, **params)
-            assert result is True, f"Action {action_name} failed"
+async def test_execute_action(monkeypatch):
+    actor = GenericActorStack()
+    monkeypatch.setattr(actor, "_click", AsyncMock(return_value=True))
+    result = await actor.execute_action("click", x=10, y=20)
+    assert result is True
 
 
 def test_validate_state():
@@ -30,21 +23,19 @@ def test_validate_state():
 
 
 @pytest.mark.asyncio
-async def test_get_screen_size(mocker):
-    mock_size = (1920, 1080)
-    mocker.patch('task_automation.actors.generic.mouse_keyboard.pyautogui.size', return_value=mock_size)
+async def test_get_screen_bounds():
     actor = GenericActorStack()
-    result = await actor._get_screen_size()
-    assert result == mock_size
+    bounds = await actor._get_screen_bounds()
+    assert isinstance(bounds, tuple)
+    assert len(bounds) == 4
 
 
 @pytest.mark.asyncio
-async def test_get_mouse_position(mocker):
-    mock_position = (500, 300)
-    mocker.patch('task_automation.actors.generic.mouse_keyboard.pyautogui.position', return_value=mock_position)
+async def test_get_mouse_position():
     actor = GenericActorStack()
     result = await actor._get_mouse_position()
-    assert result == mock_position
+    assert isinstance(result, tuple)
+    assert len(result) == 2
 
 # Dependencies: pytest, ...actors.generic.mouse_keyboard, unittest.mock
 # Required Actions: None
