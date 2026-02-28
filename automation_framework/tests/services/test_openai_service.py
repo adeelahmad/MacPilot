@@ -1,8 +1,25 @@
+import types
+
 import pytest
-from ...services.ai.openai_service import OpenAIService
+
 from ...core.config import AutomationConfig
-import json
-import os
+from ...models.pydantic_models import ActionStep, AnalysisResult, ValidationResult, RecoveryStep
+from ...services.ai.openai_service import OpenAIService
+
+
+class DummyCompletions:
+    def __init__(self, response):
+        self._response = response
+
+    def create(self, **_: object):
+        return self._response
+
+
+def _set_response(service: OpenAIService, response):
+    """Inject a dummy response into the OpenAIService client."""
+    service.client = types.SimpleNamespace(
+        chat=types.SimpleNamespace(completions=DummyCompletions(response))
+    )
 
 
 @pytest.fixture
@@ -11,7 +28,7 @@ def config():
         openai_api_key="test-key",
         max_retries=1,
         timeout=5,
-        database_url="sqlite:///:memory:"
+        database_url="sqlite:///:memory:",
     )
 
 
@@ -22,76 +39,96 @@ def openai_service(config):
 
 @pytest.mark.asyncio
 async def test_analyze_instruction(openai_service):
-    instruction = "Fetch latest news"
-    current_state = {"active_window": "Chrome"}
-    available_actions = {"chrome": {"open_url": {}}}
+    analysis = AnalysisResult(
+        goal="Fetch news",
+        required_actions=["chrome.open_url"],
+        constraints=[],
+        prerequisites=[],
+        estimated_steps=3,
+    )
+    _set_response(openai_service, analysis)
 
-    analysis = await openai_service.analyze_instruction(
-        instruction, current_state, available_actions
+    result = await openai_service.analyze_instruction(
+        "Fetch latest news",
+        {"active_window": "Chrome"},
+        {"chrome": {"open_url": {}}},
     )
 
-    assert isinstance(analysis, dict)
-    assert "goal" in analysis
-    assert "required_actions" in analysis
-    assert isinstance(analysis["required_actions"], list)
+    assert isinstance(result, AnalysisResult)
+    assert result.goal == "Fetch news"
 
 
 @pytest.mark.asyncio
 async def test_generate_action_plan(openai_service):
-    analysis = {
-        "goal": "Fetch news",
-        "required_actions": ["open_url"],
-        "constraints": [],
-        "prerequisites": [],
-        "estimated_steps": 1
-    }
-    available_actions = {"chrome": {"open_url": {}}}
+    plan = [
+        ActionStep(step=1, actor="chrome", action="open_url", params={"url": "https://example.com"})
+    ]
+    _set_response(openai_service, plan)
 
-    plan = await openai_service.generate_action_plan(
-        analysis, available_actions
+    result = await openai_service.generate_action_plan(
+        AnalysisResult(
+            goal="Fetch news",
+            required_actions=[],
+            constraints=[],
+            prerequisites=[],
+            estimated_steps=1,
+        ),
+        {"chrome": {"open_url": {}}},
     )
 
-    assert isinstance(plan, list)
-    if plan:  # Plan might be empty if API call fails
-        assert isinstance(plan[0], dict)
-        assert "step" in plan[0]
-        assert "action" in plan[0]
+    assert isinstance(result, list)
+    assert isinstance(result[0], ActionStep)
 
 
 @pytest.mark.asyncio
 async def test_validate_results(openai_service):
-    validation = await openai_service.validate_results(
+    validation = ValidationResult(
+        success=True,
+        goal_achieved=True,
+        issues=[],
+        recommendations=[],
+    )
+    _set_response(openai_service, validation)
+
+    result = await openai_service.validate_results(
         "Fetch news",
-        [{"step": 1, "action": "open_url"}],
+        [
+            ActionStep(step=1, actor="chrome", action="open_url", params={"url": "https://example.com"})
+        ],
         [{"success": True}],
-        {"active_window": "Chrome"}
+        {"active_window": "Chrome"},
     )
 
-    assert isinstance(validation, dict)
-    assert "success" in validation
-    assert isinstance(validation["success"], bool)
+    assert isinstance(result, ValidationResult)
+    assert result.success is True
 
 
 @pytest.mark.asyncio
 async def test_generate_recovery_plan(openai_service):
-    recovery_plan = await openai_service.generate_recovery_plan(
-        {"step": 1, "action": "open_url"},
-        ["Failed to connect"],
-        {"active_window": "Chrome"}
+    recovery = [RecoveryStep(step=1, action="retry", params={}, reason="Try again")]
+    _set_response(openai_service, recovery)
+
+    result = await openai_service.generate_recovery_plan(
+        ActionStep(step=1, actor="chrome", action="open_url", params={"url": "https://example.com"}),
+        ["timeout"],
+        AnalysisResult(
+            goal="Fetch news",
+            required_actions=[],
+            constraints=[],
+            prerequisites=[],
+            estimated_steps=1,
+        ),
     )
 
-    assert isinstance(recovery_plan, list)
-    if recovery_plan:  # Plan might be empty if API call fails
-        assert isinstance(recovery_plan[0], dict)
-        assert "step" in recovery_plan[0]
-        assert "action" in recovery_plan[0]
+    assert isinstance(result, list)
+    assert isinstance(result[0], RecoveryStep)
 
 
 def test_create_analysis_prompt(openai_service):
     prompt = openai_service._create_analysis_prompt(
         instruction="test",
-        current_state="{}",
-        available_actions="{}"
+        current_state={"active_window": "Chrome"},
+        available_actions={"chrome": {"open_url": {}}},
     )
     assert isinstance(prompt, str)
     assert "test" in prompt
@@ -99,8 +136,14 @@ def test_create_analysis_prompt(openai_service):
 
 def test_create_plan_prompt(openai_service):
     prompt = openai_service._create_plan_prompt(
-        analysis="{}",
-        available_actions="{}"
+        analysis=AnalysisResult(
+            goal="Test",
+            required_actions=[],
+            constraints=[],
+            prerequisites=[],
+            estimated_steps=1,
+        ),
+        available_actions={"chrome": {"open_url": {}}},
     )
     assert isinstance(prompt, str)
-    assert "plan" in prompt.lower()
+    assert "ActionStep" in prompt

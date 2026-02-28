@@ -6,7 +6,7 @@ import logging
 from rich.console import Console
 from services.state.manager import WindowState, ApplicationState, UIElement, UIState
 from core.context import AutomationContext
-from services.ai.openai_service import OpenAIService as AIService
+from services.ai.factory import get_ai_service
 from services.validation.validator import StateValidator
 from models.pydantic_models import ActionStep, AnalysisResult, DynamicBaseModel, ValidationResult
 from pydantic import create_model
@@ -21,7 +21,10 @@ class Orchestrator:
     def __init__(self, config: Dict[str, Any]):
         self.config = config
         self.logger = logging.getLogger(__name__)
-        self.ai = AIService(config)
+        framework_config = config.get("config")
+        if not framework_config:
+            raise ValueError("Automation configuration is missing from orchestrator config.")
+        self.ai = get_ai_service(framework_config)
         self.state_validator = StateValidator()
         self.available_actions = self._get_available_actions()
         self.encoder = DateTimeEncoder()
