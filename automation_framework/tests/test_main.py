@@ -5,7 +5,7 @@
 
 import pytest
 from automation_framework.main import AutomationFramework
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 
 
 @pytest.mark.asyncio
@@ -19,13 +19,12 @@ async def test_framework_initialization(config):
 
 
 @pytest.mark.asyncio
-async def test_execute_instruction(mocker, config):
+async def test_execute_instruction(config):
     """Test instruction execution flow."""
     mock_orchestrator = AsyncMock()
-    mocker.patch('automation_framework.main.Orchestrator', return_value=mock_orchestrator)
-
-    framework = AutomationFramework()
-    await framework.execute_instruction("Test instruction")
+    with patch("automation_framework.main.Orchestrator", return_value=mock_orchestrator):
+        framework = AutomationFramework()
+        await framework.execute_instruction("Test instruction")
 
     mock_orchestrator.execute_instruction.assert_called_once_with("Test instruction")
 
