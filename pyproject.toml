@@ -1,0 +1,29 @@
+[project]
+name = "macpilot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "click>=8.1.0",
+    "instructor>=0.4.0",
+    "mlx-lm",
+    "numpy>=1.24.0",
+    "openai>=1.0.0",
+    "pillow>=10.0.0",
+    "psutil>=5.9.0",
+    "pydantic>=2.0.0",
+    "pyobjc>=12.1",
+    "pyobjc-core>=9.2",
+    "pyobjc-framework-cocoa>=9.2",
+    "pyobjc-framework-quartz>=9.2",
+    "pyobjc-framework-vision>=9.2",
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.1",
+    "pytest-cov>=4.1.0",
+    "pyyaml>=6.0.1",
+    "rich>=13.5.0",
+]
+
+[tool.uv.sources]
+mlx-lm = { git = "https://github.com/ml-explore/mlx-lm.git", rev = "main" }

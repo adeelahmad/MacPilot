@@ -10,7 +10,7 @@ import traceback
 from typing import Any, Callable, Coroutine
 import asyncio
 
-from core.config import AutomationConfig
+from ..core.config import AutomationConfig
 
 logger = logging.getLogger(__name__)
 

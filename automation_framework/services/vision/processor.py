@@ -8,7 +8,7 @@ import Vision
 import logging
 import AppKit
 from Cocoa import NSWorkspace, NSScreen
-from core.config import AutomationConfig
+from ...core.config import AutomationConfig
 
 logger = logging.getLogger(__name__)
 

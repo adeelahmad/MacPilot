@@ -1,6 +1,7 @@
 # File Path: automation_framework/services/state/manager.py
 from typing import Dict, Any, List, Optional, Tuple
 from dataclasses import dataclass, field
+import asyncio
 import Quartz
 from Cocoa import NSWorkspace, NSScreen, NSEvent, NSApplication
 import logging
@@ -124,6 +125,16 @@ class StateManager:
         self.workspace = NSWorkspace.sharedWorkspace()
         self.screen = NSScreen.mainScreen()
         self.vision_processor = VisionProcessor()
+
+    @staticmethod
+    def _coerce_bounds(bounds: Any) -> Dict[str, float]:
+        """Convert Quartz/CoreFoundation bounds objects to a plain dict."""
+        if isinstance(bounds, dict):
+            return bounds
+        try:
+            return dict(bounds)
+        except Exception:
+            return {}
 
     async def capture_full_state(self) -> UIState:
         """Capture complete system and UI state."""
@@ -255,7 +266,7 @@ class StateManager:
                         window_id = window.get(Quartz.kCGWindowNumber, 0)
                         title = window.get(Quartz.kCGWindowName, "")
                         app_name = window.get(Quartz.kCGWindowOwnerName, "")
-                        bounds = window.get(Quartz.kCGWindowBounds, {})
+                        bounds = self._coerce_bounds(window.get(Quartz.kCGWindowBounds, {}))
 
                         # Check window flags
                         is_onscreen = bool(
@@ -263,7 +274,10 @@ class StateManager:
                         )
                         try:
                             is_minimized = bool(
-                                window.get(Quartz.kCGWindowIsMinimized, False)
+                                window.get(
+                                    getattr(Quartz, "kCGWindowIsMinimized", "kCGWindowIsMinimized"),
+                                    False,
+                                )
                             )
                         except Exception:
                             is_minimized = False
@@ -323,7 +337,7 @@ class StateManager:
 
                     app_state = ApplicationState(
                         name=app.localizedName(),
-                        bundle_id=app.bundleIdentifier(),
+                        bundle_id=app.bundleIdentifier() or "",
                         pid=pid,
                         is_active=app.isActive(),
                         is_frontmost=pid == frontmost_pid,
@@ -361,7 +375,7 @@ class StateManager:
                             window_id = window.get(Quartz.kCGWindowNumber, 0)
                             title = window.get(Quartz.kCGWindowName, "")
                             app_name = window.get(Quartz.kCGWindowOwnerName, "")
-                            bounds = window.get(Quartz.kCGWindowBounds, {})
+                            bounds = self._coerce_bounds(window.get(Quartz.kCGWindowBounds, {}))
 
                             # Check window flags safely
                             is_onscreen = bool(
@@ -369,7 +383,10 @@ class StateManager:
                             )
                             try:
                                 is_minimized = bool(
-                                    window.get(Quartz.kCGWindowIsMinimized, False)
+                                    window.get(
+                                        getattr(Quartz, "kCGWindowIsMinimized", "kCGWindowIsMinimized"),
+                                        False,
+                                    )
                                 )
                             except Exception:
                                 is_minimized = False
@@ -704,9 +721,14 @@ class StateManager:
                     id=window_id,
                     title=window.get(Quartz.kCGWindowName, ""),
                     app=window.get(Quartz.kCGWindowOwnerName, ""),
-                    bounds=window.get(Quartz.kCGWindowBounds, {}),
+                    bounds=self._coerce_bounds(window.get(Quartz.kCGWindowBounds, {})),
                     is_active=window.get(Quartz.kCGWindowIsOnscreen, False),
-                    is_minimized=bool(window.get(Quartz.kCGWindowIsMinimized, False)),
+                    is_minimized=bool(
+                        window.get(
+                            getattr(Quartz, "kCGWindowIsMinimized", "kCGWindowIsMinimized"),
+                            False,
+                        )
+                    ),
                     alpha=float(window.get(Quartz.kCGWindowAlpha, 1.0)),
                     layer=int(window.get(Quartz.kCGWindowLayer, 0)),
                 )

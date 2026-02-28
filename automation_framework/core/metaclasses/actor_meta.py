@@ -20,8 +20,13 @@ class ActorStackMeta(ABCMeta):
         if name == 'ActorStack':
             return cls
 
-        # Register concrete actor stack
+        # Register concrete actor stack by both class name and actor logical name.
+        # Runtime code resolves actors by logical name ("chrome", "finder", etc.),
+        # while some tests assert class-name registration.
         mcs._registry[name] = cls
+        actor_name = getattr(cls, "name", None)
+        if isinstance(actor_name, str) and actor_name:
+            mcs._registry[actor_name] = cls
 
         # Validate required methods
         required_methods = {'get_capabilities', 'execute_action', 'validate_state'}

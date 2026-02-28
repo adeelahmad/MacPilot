@@ -4,14 +4,14 @@
 # Type of Code Response: Add new code
 
 import pytest
-from ..main import AutomationFramework
-from unittest.mock import AsyncMock
+from automation_framework.main import AutomationFramework
+from unittest.mock import AsyncMock, patch
 
 
 @pytest.mark.asyncio
 async def test_framework_initialization(config):
     """Test framework initializes correctly."""
-    framework = AutomationFramework(config)
+    framework = AutomationFramework()
     assert framework.state_manager is not None
     assert len(framework.actors) > 0
     assert framework.instruction_processor is not None
@@ -19,20 +19,19 @@ async def test_framework_initialization(config):
 
 
 @pytest.mark.asyncio
-async def test_execute_instruction(mocker, config):
+async def test_execute_instruction(config):
     """Test instruction execution flow."""
     mock_orchestrator = AsyncMock()
-    mocker.patch('task_automation.main.Orchestrator', return_value=mock_orchestrator)
-
-    framework = AutomationFramework(config)
-    await framework.execute_instruction("Test instruction")
+    with patch("automation_framework.main.Orchestrator", return_value=mock_orchestrator):
+        framework = AutomationFramework()
+        await framework.execute_instruction("Test instruction")
 
     mock_orchestrator.execute_instruction.assert_called_once_with("Test instruction")
 
 
 @pytest.mark.asyncio
 async def test_list_capabilities(config):
-    framework = AutomationFramework(config)
+    framework = AutomationFramework()
     capabilities = framework.list_capabilities()
     assert isinstance(capabilities, dict)
     assert "generic" in capabilities

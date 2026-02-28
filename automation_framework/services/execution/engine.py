@@ -1,11 +1,11 @@
 import asyncio
 from typing import Dict, Any, List, Optional, cast
 import logging
-from core.config import AutomationConfig
-from services.state.manager import StateManager
-from core.metaclasses.actor_meta import ActorStackMeta
-from services.patterns.pattern_matcher import PatternMatcher
-from services.patterns.interaction_patterns import PatternExecutor
+from ...core.config import AutomationConfig
+from ..state.manager import StateManager
+from ...core.metaclasses.actor_meta import ActorStackMeta
+from ..patterns.pattern_matcher import PatternMatcher
+from ..patterns.interaction_patterns import PatternExecutor
 import Quartz
 from Cocoa import NSWorkspace
 

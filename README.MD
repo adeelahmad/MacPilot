@@ -34,6 +34,7 @@ MacPilot is a state-of-the-art macOS UI automation framework that combines nativ
 
 ### 🧠 Core Intelligence
 - **GPT Integration** - Natural language instruction processing
+- **Local MLX-LM** - Run instructions entirely on-device with Apple Silicon
 - **Vision Framework** - Advanced UI element detection
 - **State Awareness** - Real-time system state tracking
 - **Pattern Recognition** - Learned UI interaction patterns
@@ -131,6 +132,30 @@ async def handle_login(username: str, password: str):
     ]
 ```
 
+## 🍏 Local Apple Silicon LLMs
+
+You can run MacPilot's planning brain entirely on-device with [MLX‑LM](https://github.com/ml-explore/mlx-examples/tree/main/llms/mlx_lm) on Apple Silicon.
+
+1. `pip install "mlx-lm @ git+https://github.com/ml-explore/mlx-lm.git@main"`
+2. Switch the provider:
+   ```bash
+   export LLM_PROVIDER=mlx
+   export MLX_MODEL=mlx-community/Meta-Llama-3-8B-Instruct-4bit
+   export MLX_MAX_OUTPUT_TOKENS=768    # optional
+   export MLX_TEMPERATURE=0.1          # optional
+   ```
+3. Or via YAML config:
+   ```yaml
+   llm_provider: mlx
+   mlx_model: mlx-community/Meta-Llama-3-8B-Instruct-4bit
+   mlx_max_output_tokens: 768
+   mlx_temperature: 0.1
+   ```
+
+MacPilot relies on the bleeding-edge `mlx-lm` tool-call handling, so we install it directly from the `mlx-lm` GitHub repository to stay on the latest commit.
+
+When `llm_provider` is `mlx`, MacPilot loads the configured model once and keeps all inference local; otherwise it uses the configured OpenAI-compatible endpoint.
+
 ## 📋 Todo & Roadmap
 
 ### High Priority
@@ -140,7 +165,7 @@ async def handle_login(username: str, password: str):
   - [ ] Visual workflow builder
 
 - [ ] Core Features
-  - [ ] Local LLM support
+  - [x] Local LLM support
   - [ ] Improved error recovery
   - [ ] Performance optimizations
 

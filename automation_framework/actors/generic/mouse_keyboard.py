@@ -10,7 +10,7 @@ from Cocoa import (
 )
 import AppKit
 from ..base import ActorStack
-from models.pydantic_models import ValidationResult
+from ...models.pydantic_models import ValidationResult
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +108,11 @@ class GenericActorStack(ActorStack):
             logger.error(f"Error executing action {action}: {e}")
             return False
 
-    async def validate_state(self, current_state: Dict[str, Any], expected_state: Dict[str, Any]) -> ValidationResult:
+    def validate_state(self) -> bool:
+        """Basic runtime readiness check used by the execution engine."""
+        return self._event_source is not None
+
+    async def validate_action_state(self, current_state: Dict[str, Any], expected_state: Dict[str, Any]) -> ValidationResult:
         """Validate the actor's state."""
         failures = []
         warnings = []
@@ -120,9 +124,8 @@ class GenericActorStack(ActorStack):
                 return ValidationResult(
                     success=False,
                     goal_achieved=False,
-                    failures=failures,
-                    warnings=warnings,
-                    details={"event_source": None}
+                    issues=failures,
+                    recommendations=warnings,
                 )
 
             # Get current states
@@ -160,9 +163,8 @@ class GenericActorStack(ActorStack):
             return ValidationResult(
                 success=success,
                 goal_achieved=goal_achieved,
-                failures=failures,
-                warnings=warnings,
-                details=details
+                issues=failures,
+                recommendations=warnings,
             )
 
         except Exception as e:
@@ -170,9 +172,8 @@ class GenericActorStack(ActorStack):
             return ValidationResult(
                 success=False,
                 goal_achieved=False,
-                failures=[f"Validation error: {str(e)}"],
-                warnings=warnings,
-                details={}
+                issues=[f"Validation error: {str(e)}"],
+                recommendations=warnings,
             )
 
     async def _click(self, x: int, y: int) -> bool:
@@ -375,6 +376,8 @@ class GenericActorStack(ActorStack):
     async def _get_screen_bounds(self) -> Tuple[float, float, float, float]:
         """Get main screen bounds."""
         screen = NSScreen.mainScreen()
+        if screen is None:
+            return (0.0, 0.0, 0.0, 0.0)
 
         frame = screen.frame()
         return (frame.origin.x, frame.origin.y, frame.size.width, frame.size.height)

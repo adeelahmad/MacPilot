@@ -1,14 +1,24 @@
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]  # repository root
+PKG_ROOT = Path(__file__).resolve().parents[1]  # automation_framework package root
+for path in (PKG_ROOT, ROOT):
+    str_path = str(path)
+    if str_path not in sys.path:
+        sys.path.insert(0, str_path)
+
 import pytest
-from .helpers.state_helpers import (
+from automation_framework.tests.helpers.state_helpers import (
     create_mock_window_state,
     create_mock_ui_element,
     create_mock_application_state,
     create_mock_system_state,
-    create_complete_mock_state
+    create_complete_mock_state,
 )
-from ..core.config import AutomationConfig
-from ..services.state.manager import StateManager
-from ..services.validation.validator import StateValidator
+from automation_framework.core.config import AutomationConfig
+from automation_framework.services.state.manager import StateManager
+from automation_framework.services.validation.validator import StateValidator
 
 
 @pytest.fixture

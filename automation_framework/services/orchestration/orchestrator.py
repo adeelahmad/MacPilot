@@ -4,11 +4,11 @@ import asyncio
 from typing import Dict, Any, Optional, List, Union
 import logging
 from rich.console import Console
-from services.state.manager import WindowState, ApplicationState, UIElement, UIState
-from core.context import AutomationContext
-from services.ai.openai_service import OpenAIService as AIService
-from services.validation.validator import StateValidator
-from models.pydantic_models import ActionStep, AnalysisResult, DynamicBaseModel, ValidationResult
+from ..state.manager import WindowState, ApplicationState, UIElement, UIState
+from ...core.context import AutomationContext
+from ..ai.factory import get_ai_service
+from ..validation.validator import StateValidator
+from ...models.pydantic_models import ActionStep, AnalysisResult, DynamicBaseModel, ValidationResult
 from pydantic import create_model
 from ..shared.serialization import recursive_dict_conversion, DateTimeEncoder
 
@@ -21,7 +21,10 @@ class Orchestrator:
     def __init__(self, config: Dict[str, Any]):
         self.config = config
         self.logger = logging.getLogger(__name__)
-        self.ai = AIService(config)
+        framework_config = config.get("config")
+        if not framework_config:
+            raise ValueError("Automation configuration is missing from orchestrator config.")
+        self.ai = get_ai_service(framework_config)
         self.state_validator = StateValidator()
         self.available_actions = self._get_available_actions()
         self.encoder = DateTimeEncoder()
@@ -45,7 +48,16 @@ class Orchestrator:
                     warnings=[]
                 )
 
-            return await actor.validate_state(current_state_dict, expected_state)
+            if hasattr(actor, "validate_action_state"):
+                return await actor.validate_action_state(current_state_dict, expected_state)
+
+            is_valid = bool(actor.validate_state())
+            return ValidationResult(
+                success=is_valid,
+                goal_achieved=is_valid,
+                issues=[] if is_valid else [f"Actor {step.actor} not in a valid state"],
+                recommendations=[],
+            )
 
         except Exception as e:
             logger.error(f"Validation error: {e}")

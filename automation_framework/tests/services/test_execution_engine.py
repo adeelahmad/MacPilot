@@ -32,7 +32,7 @@ async def test_execute_plan(engine):
 
 @pytest.mark.asyncio
 async def test_actor_validation(engine):
-    actor = await engine._get_actor('chrome')
+    actor = await engine._get_actor('generic')
     assert actor is not None
     assert await engine._validate_actor_requirements(actor)
 
