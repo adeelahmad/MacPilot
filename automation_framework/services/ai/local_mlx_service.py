@@ -3,21 +3,16 @@
 from __future__ import annotations
 
 import asyncio
+import importlib
 import json
 import logging
 import re
 from typing import Any, Dict, List
 
-try:  # Optional dependency – only needed for local models
-    from mlx_lm import generate, load
-    from mlx_lm.sample_utils import make_sampler
-except ImportError:  # pragma: no cover - handled via runtime guard
-    generate = load = None
-    make_sampler = None
 from pydantic import BaseModel, ValidationError
 
-from core.config import AutomationConfig
-from models.pydantic_models import (
+from ...core.config import AutomationConfig
+from ...models.pydantic_models import (
     ActionStep,
     AnalysisResult,
     DynamicBaseModel,
@@ -28,6 +23,9 @@ from .base import BaseLLMService, SYSTEM_PROMPT
 
 TOOL_CALL_PATTERN = re.compile(r"<tool_call(?:\s+[^>]*)?>(.*?)</tool_call>", re.IGNORECASE | re.DOTALL)
 THINK_PATTERN = re.compile(r"<think>(.*?)</think>", re.IGNORECASE | re.DOTALL)
+generate = None
+load = None
+make_sampler = None
 
 
 class MLXLMService(BaseLLMService):
@@ -120,20 +118,31 @@ class MLXLMService(BaseLLMService):
         raise RuntimeError("Exceeded local MLX retries")
 
     def _ensure_model(self):
+        global load
         if self._model is None or self._tokenizer is None:
-            if load is None:
-                raise RuntimeError(
-                    "mlx-lm is not installed. Install it with `pip install mlx-lm` to use the local provider."
-                )
+            if "load" not in globals() or load is None:
+                try:
+                    load = importlib.import_module("mlx_lm").load
+                except Exception as exc:
+                    raise RuntimeError(
+                        "mlx-lm is not available in this environment."
+                    ) from exc
             self.logger.info(f"Loading MLX model '{self.model_id}'")
             self._model, self._tokenizer = load(self.model_id)
 
     def _generate_text(self, prompt: str) -> str:
+        global generate, make_sampler
         self._ensure_model()
-        if generate is None or make_sampler is None:
-            raise RuntimeError(
-                "mlx-lm is not installed. Install it with `pip install mlx-lm` to use the local provider."
-            )
+        if "generate" not in globals() or generate is None or "make_sampler" not in globals() or make_sampler is None:
+            try:
+                mlx_module = importlib.import_module("mlx_lm")
+                sample_utils = importlib.import_module("mlx_lm.sample_utils")
+                generate = mlx_module.generate
+                make_sampler = sample_utils.make_sampler
+            except Exception as exc:
+                raise RuntimeError(
+                    "mlx-lm is not available in this environment."
+                ) from exc
 
         sampler = None
         if (self.temperature or 0) > 0:
