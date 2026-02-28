@@ -6,7 +6,7 @@ import subprocess
 import json
 from pathlib import Path
 from ..base import ActorStack
-from models.pydantic_models import ValidationResult
+from ...models.pydantic_models import ValidationResult
 
 logger = logging.getLogger(__name__)
 
@@ -278,14 +278,14 @@ class ChromeActorStack(ActorStack):
         result = await self._run_apple_script(script)
         return json.loads(result) if result else []
 
-    async def validate_state(self, current_state: Dict[str, Any], expected_state: Dict[str, Any]) -> ValidationResult:
+    async def validate_action_state(self, current_state: Dict[str, Any], expected_state: Dict[str, Any]) -> ValidationResult:
         """Validate Chrome-specific state."""
         failures = []
         warnings = []
 
         try:
             # Basic state check
-            if not await self.validate_browser_state():
+            if not self.validate_state():
                 failures.append("Browser not in valid state")
 
             # Check expected state if provided
@@ -297,12 +297,14 @@ class ChromeActorStack(ActorStack):
 
             return ValidationResult(
                 success=len(failures) == 0,
-                failures=failures,
-                warnings=warnings
+                goal_achieved=len(failures) == 0,
+                issues=failures,
+                recommendations=warnings,
             )
         except Exception as e:
             return ValidationResult(
                 success=False,
-                failures=[f"Validation error: {str(e)}"],
-                warnings=[]
+                goal_achieved=False,
+                issues=[f"Validation error: {str(e)}"],
+                recommendations=[],
             )

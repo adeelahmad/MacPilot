@@ -1,6 +1,6 @@
 from abc import ABC
 from typing import Dict, Any, ClassVar
-from core.metaclasses.actor_meta import ActorStackMeta
+from ..core.metaclasses.actor_meta import ActorStackMeta
 
 
 class ActorStack(ABC, metaclass=ActorStackMeta):
@@ -23,4 +23,3 @@ class ActorStack(ABC, metaclass=ActorStackMeta):
     def validate_state(self) -> bool:
         """Validate actor stack is in valid state."""
         raise NotImplementedError
-
