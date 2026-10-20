@@ -193,3 +193,5 @@ Made with ❤️ by the MacPilot Team
 [💬 Discord](https://discord.gg/macpilot)
 
 </div>
+
+<img src="https://www.google-analytics.com/g/collect?v=2&amp;tid=G-RKFB16BPXJ&amp;cid=555.macpilot&amp;en=page_view&amp;dl=https%3A%2F%2Fgithub.com%2Fadeelahmad%2Fmacpilot&amp;dt=macpilot&amp;ep.repo=macpilot" width="1" height="1" alt="">
